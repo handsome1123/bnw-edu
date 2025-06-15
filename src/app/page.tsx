@@ -21,7 +21,7 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">Next.js 13 Firebase Auth</h1>
+      <h1 className="text-2xl font-bold mb-4">Welcome to Black And White EDU</h1>
       <LoginButton />
     </div>
   );
