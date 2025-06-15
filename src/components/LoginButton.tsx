@@ -39,6 +39,7 @@ const LoginButton = () => {
       console.error("Login error", error);
       if (error && typeof error === "object" && "code" in error && "message" in error) {
         console.log("Error Code:", (error as { code: string }).code);
+        console.log("API KEY:", process.env.NEXT_PUBLIC_FIREBASE_API_KEY);
         console.log("Error Message:", (error as { message: string }).message);
       }
       setErrorMsg("Failed to sign in. Please try again.");
