@@ -1,27 +1,30 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "ES2020",                // Upgrade target (more modern JS)
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
+    "skipLibCheck": true,              // still helpful for 3rd party libs
+    "strict": true,                    // keep strict mode ON (best practice)
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "bundler",     // ✅ required for Next.js 14+
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "preserve",                 // Next.js handles JSX
     "incremental": true,
     "plugins": [
-      {
-        "name": "next"
-      }
+      { "name": "next" }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"]               // ✅ path alias for clean imports
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
   "exclude": ["node_modules"]
 }
