@@ -37,6 +37,10 @@ const LoginButton = () => {
       router.push("/dashboard");
     } catch (error) {
       console.error("Login error", error);
+      if (error && typeof error === "object" && "code" in error && "message" in error) {
+        console.log("Error Code:", (error as { code: string }).code);
+        console.log("Error Message:", (error as { message: string }).message);
+      }
       setErrorMsg("Failed to sign in. Please try again.");
     } finally {
       setLoading(false);
