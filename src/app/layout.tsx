@@ -3,7 +3,7 @@ import { AuthProvider } from '../context/AuthContext';
 import { SoundProvider } from '@/context/SoundContext';
 
 export const metadata = {
-  title: 'BAWEdu',
+  title: 'B&WEdu',
   description: 'Black and White Edu',
 };
 
