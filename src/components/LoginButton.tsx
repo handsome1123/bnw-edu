@@ -6,7 +6,11 @@ import { auth, googleProvider, db } from '../lib/firebase';
 import { useRouter } from 'next/navigation';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
-const LoginButton = () => {
+interface LoginButtonProps {
+  className?: string;
+}
+
+const LoginButton: React.FC<LoginButtonProps> = ({ className }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -52,7 +56,7 @@ const LoginButton = () => {
     <div>
       <button
         onClick={handleLogin}
-        className={`px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+        className={className || "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"}
         disabled={loading}
       >
         {loading ? "Signing in..." : "Sign in with Google"}
