@@ -56,6 +56,7 @@ export default function DashboardPage ()  {
     <ProtectedRoute>
       <div className="flex flex-col items-center justify-center min-h-screen">
         <SoundToggle />
+        <br />
         <h1 className="text-2xl font-bold mb-4">Your Lessons</h1>
         <div className="flex flex-col gap-2">
           {lessons.map(lesson => (

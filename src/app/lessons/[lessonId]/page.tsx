@@ -7,6 +7,7 @@ import { db } from "../../../lib/firebase";
 import { useAuth } from "../../../context/AuthContext";
 import ProtectedRoute from "../../../components/ProtectedRoute";
 import { useSound } from "../../../context/SoundContext";
+import LoadingSpinner from '../../../components/LoadingSpinner';
 
 type Question = {
   question: string;
@@ -43,7 +44,7 @@ export default function LessonPage() {
     fetchLesson();
   }, [lessonId]);
 
-  if (!lesson) return <p>Loading lesson...</p>;
+  if (!lesson) return <LoadingSpinner message="Checking authentication..." size="lg" color="text-indigo-600" />;
 
   const handleAnswer = () => {
     const currentQuestion = lesson.questions[currentQuestionIndex];

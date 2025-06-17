@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const ProtectedRoute = ({ children, requiredRole }: { children: React.ReactNode, requiredRole?: string }) => {
   const { user, loading, role } = useAuth();
@@ -20,7 +21,7 @@ const ProtectedRoute = ({ children, requiredRole }: { children: React.ReactNode,
     [user, loading, role, requiredRole, router]);
 
   if (loading) 
-    return <p>Loading...</p>;
+    return <LoadingSpinner message="Checking authentication..." size="lg" color="text-indigo-600" />;
   
 
   return <>{children}</>;
