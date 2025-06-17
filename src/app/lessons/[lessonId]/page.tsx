@@ -55,9 +55,11 @@ export default function LessonPage() {
     fetchLesson();
   }, [lessonId]);
 
+
   useEffect(() => {
     if (lesson) {
-      speak(lesson.questions[currentQuestionIndex].question);
+      const currentQuestion = lesson.questions[currentQuestionIndex];
+      speak(currentQuestion.question);
     }
   }, [currentQuestionIndex, lesson]);
 
@@ -147,7 +149,10 @@ export default function LessonPage() {
             {currentQuestion.options.map((option, idx) => (
               <button
                 key={idx}
-                onClick={() => setSelectedOption(option)}
+                onClick={() => {
+                  setSelectedOption(option);
+                  speak(option); // Speak only when user clicks
+                }}
                 className={`px-4 py-2 rounded border transition ${
                   selectedOption === option
                     ? "bg-indigo-600 text-white border-indigo-600"
