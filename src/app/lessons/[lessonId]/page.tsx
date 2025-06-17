@@ -20,6 +20,17 @@ type Lesson = {
   questions: Question[];
 };
 
+const speak = (text: string) => {
+  if (typeof window !== "undefined" && "speechSynthesis" in window) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US"; // Change to 'th-TH' or 'my-MM' for Thai/Burmese
+    speechSynthesis.cancel(); // stop current speech if any
+    speechSynthesis.speak(utterance);
+  }
+};
+
+
+
 export default function LessonPage() {
   const { play } = useSound();
   const { lessonId } = useParams();
@@ -38,11 +49,19 @@ export default function LessonPage() {
       const lessonRef = doc(db, "lessons", lessonId as string);
       const lessonSnap = await getDoc(lessonRef);
       if (lessonSnap.exists()) {
-        setLesson(lessonSnap.data() as Lesson);
+        const lessonData = lessonSnap.data() as Lesson;
+        setLesson(lessonData);
+        speak(lessonData.questions[0].question); 
       }
     };
     fetchLesson();
   }, [lessonId]);
+
+  useEffect(() => {
+    if(lesson) {
+      speak(lesson.questions[currentQuestionIndex].question);
+    }
+  },[currentQuestionIndex]);
 
   if (!lesson) return <LoadingSpinner message="Checking authentication..." size="lg" color="text-indigo-600" />;
 
@@ -95,6 +114,12 @@ export default function LessonPage() {
     <ProtectedRoute>
       <div className={`flex flex-col items-center justify-center min-h-screen ${bgColor}`}>
         <h2 className="text-xl font-bold mb-4">{lesson.title}</h2>
+        <button
+          onClick={() => speak(currentQuestion.question)}
+          className="mb-2 text-indigo-600 underline"
+          >
+          🔊 Read Question Aloud
+        </button>
         <p className="mb-4">{currentQuestion.question}</p>
         <div className="flex flex-col gap-2 mb-4">
           {currentQuestion.options.map((option: string, idx: number) => (
