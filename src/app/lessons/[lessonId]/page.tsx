@@ -7,7 +7,7 @@ import { db } from "../../../lib/firebase";
 import { useAuth } from "../../../context/AuthContext";
 import ProtectedRoute from "../../../components/ProtectedRoute";
 import { useSound } from "../../../context/SoundContext";
-import LoadingSpinner from '../../../components/LoadingSpinner';
+import LoadingSpinner from "../../../components/LoadingSpinner";
 
 type Question = {
   question: string;
@@ -19,17 +19,6 @@ type Lesson = {
   title: string;
   questions: Question[];
 };
-
-const speak = (text: string) => {
-  if (typeof window !== "undefined" && "speechSynthesis" in window) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "en-US"; // Change to 'th-TH' or 'my-MM' for Thai/Burmese
-    speechSynthesis.cancel(); // stop current speech if any
-    speechSynthesis.speak(utterance);
-  }
-};
-
-
 
 export default function LessonPage() {
   const { play } = useSound();
@@ -44,6 +33,15 @@ export default function LessonPage() {
   const [finished, setFinished] = useState(false);
   const [bgColor, setBgColor] = useState("");
 
+  const speak = (text: string) => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      speechSynthesis.cancel();
+      speechSynthesis.speak(utterance);
+    }
+  };
+
   useEffect(() => {
     const fetchLesson = async () => {
       const lessonRef = doc(db, "lessons", lessonId as string);
@@ -51,22 +49,20 @@ export default function LessonPage() {
       if (lessonSnap.exists()) {
         const lessonData = lessonSnap.data() as Lesson;
         setLesson(lessonData);
-        speak(lessonData.questions[0].question); 
+        speak(lessonData.questions[0].question);
       }
     };
     fetchLesson();
   }, [lessonId]);
 
   useEffect(() => {
-    if(lesson) {
+    if (lesson) {
       speak(lesson.questions[currentQuestionIndex].question);
     }
-  },[currentQuestionIndex]);
-
-  if (!lesson) return <LoadingSpinner message="Checking authentication..." size="lg" color="text-indigo-600" />;
+  }, [currentQuestionIndex, lesson]);
 
   const handleAnswer = () => {
-    const currentQuestion = lesson.questions[currentQuestionIndex];
+    const currentQuestion = lesson!.questions[currentQuestionIndex];
     if (selectedOption === currentQuestion.answer) {
       setScore(score + 1);
       play("correct.mp3");
@@ -77,7 +73,7 @@ export default function LessonPage() {
     }
 
     setTimeout(() => {
-      if (currentQuestionIndex + 1 < lesson.questions.length) {
+      if (currentQuestionIndex + 1 < lesson!.questions.length) {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
         setSelectedOption("");
         setBgColor("");
@@ -96,14 +92,33 @@ export default function LessonPage() {
     play("finish.mp3");
   };
 
+  if (!lesson)
+    return (
+      <LoadingSpinner
+        message="Loading lesson..."
+        size="lg"
+        color="text-indigo-600"
+      />
+    );
+
   if (finished) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <h2 className="text-2xl font-bold mb-4">Lesson Completed!</h2>
-        <p>Your score: {score} / {lesson.questions.length}</p>
-        <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded" onClick={() => router.push("/dashboard")}>
-          Back to Dashboard
-        </button>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-indigo-100 to-purple-200 text-center">
+        <div className="bg-white shadow-xl rounded-xl p-8 max-w-md">
+          <h2 className="text-3xl font-bold text-indigo-700 mb-4">
+            🎉 Lesson Completed!
+          </h2>
+          <p className="text-lg mb-4">
+            Your score: <span className="font-semibold">{score}</span> /{" "}
+            {lesson.questions.length}
+          </p>
+          <button
+            className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 transition"
+            onClick={() => router.push("/dashboard")}
+          >
+            Back to Dashboard
+          </button>
+        </div>
       </div>
     );
   }
@@ -112,33 +127,48 @@ export default function LessonPage() {
 
   return (
     <ProtectedRoute>
-      <div className={`flex flex-col items-center justify-center min-h-screen ${bgColor}`}>
-        <h2 className="text-xl font-bold mb-4">{lesson.title}</h2>
-        <button
-          onClick={() => speak(currentQuestion.question)}
-          className="mb-2 text-indigo-600 underline"
+      <div
+        className={`flex flex-col items-center justify-center min-h-screen px-4 py-10 transition-all duration-500 ${bgColor}`}
+      >
+        <div className="bg-white shadow-lg rounded-xl p-6 w-full max-w-xl text-center space-y-6">
+          <h2 className="text-gl font-bold text-indigo-700">
+            📘 {lesson.title}
+          </h2>
+          <p className="text-2xl text-gray-800">{currentQuestion.question}</p>
+
+          <button
+            onClick={() => speak(currentQuestion.question)}
+            className="text-indigo-500 hover:underline"
           >
-          🔊 Read Question Aloud
-        </button>
-        <p className="mb-4">{currentQuestion.question}</p>
-        <div className="flex flex-col gap-2 mb-4">
-          {currentQuestion.options.map((option: string, idx: number) => (
-            <button
-              key={idx}
-              onClick={() => setSelectedOption(option)}
-              className={`px-4 py-2 border rounded ${selectedOption === option ? "bg-blue-500 text-white" : "bg-white"}`}
-            >
-              {option}
-            </button>
-          ))}
+            🔊 Read Question Aloud
+          </button>
+
+          <div className="flex flex-col gap-3">
+            {currentQuestion.options.map((option, idx) => (
+              <button
+                key={idx}
+                onClick={() => setSelectedOption(option)}
+                className={`px-4 py-2 rounded border transition ${
+                  selectedOption === option
+                    ? "bg-indigo-600 text-white border-indigo-600"
+                    : "bg-gray-100 hover:bg-gray-200"
+                }`}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+
+          <button
+            disabled={!selectedOption}
+            onClick={handleAnswer}
+            className="bg-green-500 disabled:bg-green-200 text-white px-6 py-2 rounded mt-4 transition hover:bg-green-600"
+          >
+            {currentQuestionIndex + 1 === lesson.questions.length
+              ? "Finish Lesson"
+              : "Next Question"}
+          </button>
         </div>
-        <button
-          disabled={!selectedOption}
-          onClick={handleAnswer}
-          className="px-4 py-2 bg-green-500 text-white rounded"
-        >
-          {currentQuestionIndex + 1 === lesson.questions.length ? "Finish" : "Next"}
-        </button>
       </div>
     </ProtectedRoute>
   );
