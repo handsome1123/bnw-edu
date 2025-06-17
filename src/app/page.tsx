@@ -40,7 +40,7 @@ export default function HomePage() {
         {/* Placeholder for your main illustration */}
         {/* You'd replace this with an actual SVG/Image component */}
         <div className="w-64 h-48 md:w-80 md:h-60 mb-6 flex items-center justify-center">
-          <Image src="/images/hero.png" alt="Happy kids learning English" className="max-w-full h-auto" />
+          <Image src="/images/hero.png" alt="Happy kids learning English" width={1000} height={1000} className="max-w-full h-auto" />
         </div>
 
         <h1 className="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4 tracking-tight leading-tight">
